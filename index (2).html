@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recrutement — Gendarmerie Nationale (RP)</title>
+<style>
+  :root{
+    --bleu:#0b1f4b; --bleu2:#16327a; --rouge:#d1202f; --fond:#eef1f7;
+    --carte:#ffffff; --texte:#1b2233; --gris:#6b7488; --ok:#1f8a4c;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--fond);color:var(--texte);line-height:1.5}
+  header{background:var(--bleu);color:#fff;text-align:center;padding:28px 16px 22px;position:relative}
+  header::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;
+    background:linear-gradient(90deg,#16327a 33%,#fff 33% 66%,var(--rouge) 66%)}
+  header h1{margin:0;font-size:1.5rem;letter-spacing:.04em;text-transform:uppercase}
+  header p{margin:6px 0 0;opacity:.8;font-size:.95rem}
+  main{max-width:680px;margin:24px auto;padding:0 16px 48px}
+  .carte{background:var(--carte);border-radius:12px;padding:24px;box-shadow:0 2px 12px rgba(11,31,75,.08)}
+  .etapes{display:flex;gap:8px;margin-bottom:18px}
+  .etape{flex:1;height:6px;border-radius:3px;background:#d5dae6}
+  .etape.on{background:var(--bleu2)}
+  h2{margin:0 0 4px;color:var(--bleu)}
+  .sous{color:var(--gris);margin:0 0 18px;font-size:.92rem}
+  label{display:block;font-weight:600;margin:14px 0 4px;font-size:.92rem}
+  input,textarea{width:100%;padding:10px 12px;border:1px solid #c6cddd;border-radius:8px;font:inherit;background:#fff}
+  input:focus,textarea:focus{outline:2px solid var(--bleu2);border-color:transparent}
+  textarea{min-height:110px;resize:vertical}
+  button{margin-top:20px;background:var(--bleu2);color:#fff;border:0;border-radius:8px;padding:12px 22px;font:inherit;font-weight:600;cursor:pointer}
+  button:hover{background:var(--bleu)}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  .choix{display:block;border:1px solid #c6cddd;border-radius:8px;padding:12px 14px;margin:8px 0;cursor:pointer;font-weight:500}
+  .choix:hover{border-color:var(--bleu2);background:#f5f7fc}
+  .choix input{width:auto;margin-right:10px}
+  .choix:has(input:checked){border-color:var(--bleu2);background:#e8edfa}
+  .barre{height:8px;background:#d5dae6;border-radius:4px;overflow:hidden;margin-bottom:16px}
+  .barre>div{height:100%;background:var(--bleu2);transition:width .25s}
+  .erreur{color:var(--rouge);font-weight:600;margin-top:12px;min-height:1.2em}
+  .cache{display:none}
+  .fin{text-align:center;padding:12px 0}
+  .fin .ico{font-size:3rem}
+  .compteur{font-size:.8rem;color:var(--gris);text-align:right}
+  footer{text-align:center;color:var(--gris);font-size:.8rem;padding-bottom:24px}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="titre">Gendarmerie Nationale</h1>
+  <p>Recrutement officiel — Serveur RP</p>
+</header>
+
+<main>
+  <div class="carte">
+    <div class="etapes"><div class="etape on" id="e1"></div><div class="etape" id="e2"></div><div class="etape" id="e3"></div></div>
+
+    <!-- Étape 1 -->
+    <section id="s1">
+      <h2>Dossier de candidature</h2>
+      <p class="sous">Toutes les informations sont fictives (RP).</p>
+      <form id="form1" novalidate>
+        <label>Pseudo Discord</label>
+        <input id="discord" maxlength="40" placeholder="ex : pseudo ou pseudo#0000" required>
+        <label>Nom et prénom (RP)</label>
+        <input id="nom" maxlength="80" required>
+        <label>Âge (RP)</label>
+        <input id="age" type="number" min="1" max="99" required>
+        <label>Téléphone (RP)</label>
+        <input id="tel" maxlength="20" required>
+        <label>Casier judiciaire (RP)</label>
+        <input id="casier" maxlength="100" placeholder="Vierge / mentions éventuelles" required>
+        <label>Motivations</label>
+        <textarea id="motiv" maxlength="800" placeholder="Pourquoi souhaitez-vous rejoindre la Gendarmerie ? (50 caractères min.)" required></textarea>
+        <div class="erreur" id="err1"></div>
+        <button type="submit">Passer au QCM →</button>
+      </form>
+    </section>
+
+    <!-- Étape 2 -->
+    <section id="s2" class="cache">
+      <h2>QCM de connaissances</h2>
+      <p class="sous" id="qprog"></p>
+      <div class="barre"><div id="qbar"></div></div>
+      <h3 id="qtexte"></h3>
+      <div id="qchoix"></div>
+      <div class="erreur" id="err2"></div>
+      <button id="qnext" type="button">Suivant →</button>
+    </section>
+
+    <!-- Étape 3 -->
+    <section id="s3" class="cache">
+      <h2>Entretien écrit</h2>
+      <p class="sous">Réponds comme tu le ferais en service. Sois précis et professionnel.</p>
+      <form id="form3" novalidate>
+        <div id="situations"></div>
+        <div class="erreur" id="err3"></div>
+        <button type="submit" id="envoyer">Envoyer mon dossier</button>
+      </form>
+    </section>
+
+    <!-- Fin -->
+    <section id="s4" class="cache fin">
+      <div class="ico">📨</div>
+      <h2>Dossier transmis</h2>
+      <p>Ta candidature a été envoyée au commandement.<br>Tu seras recontacté prochainement sur Discord.</p>
+    </section>
+
+    <!-- Bloqué -->
+    <section id="sbloc" class="cache fin">
+      <div class="ico">⏳</div>
+      <h2>Candidature déjà déposée</h2>
+      <p id="blocmsg"></p>
+    </section>
+  </div>
+</main>
+<footer>Site fictif de jeu de rôle — aucun lien avec l'institution réelle.</footer>
+
+<script src="config.js"></script>
+<script>
+const C = window.CONFIG, Q = window.QUESTIONS, S = window.SITUATIONS;
+const $ = id => document.getElementById(id);
+const KEY = "recrutement_gn_last";
+const state = { id: {}, rep: [], idx: 0, entretien: [] };
+
+$("titre").textContent = C.NOM_UNITE;
+
+function montrer(n){
+  ["s1","s2","s3","s4","sbloc"].forEach(s => $(s).classList.add("cache"));
+  $(n).classList.remove("cache");
+  const num = {s1:1,s2:2,s3:3}[n] || 3;
+  [1,2,3].forEach(i => $("e"+i).classList.toggle("on", i <= num));
+}
+
+// Anti-spam (par navigateur — contournable, voir README)
+const dernier = Number(localStorage.getItem(KEY) || 0);
+const resteMs = dernier + C.COOLDOWN_HEURES*3600e3 - Date.now();
+if (resteMs > 0) {
+  const h = Math.floor(resteMs/3600e3), m = Math.floor(resteMs%3600e3/60e3);
+  $("blocmsg").textContent = `Tu pourras repasser dans ${h} h ${m} min.`;
+  montrer("sbloc");
+}
+
+// Étape 1
+$("form1").addEventListener("submit", e => {
+  e.preventDefault();
+  const v = id => $(id).value.trim();
+  const age = parseInt(v("age"), 10);
+  if (!v("discord") || !v("nom") || !v("tel") || !v("casier")) return $("err1").textContent = "Remplis tous les champs.";
+  if (!(age >= 18 && age <= 60)) return $("err1").textContent = "Il faut avoir entre 18 et 60 ans (RP) pour candidater.";
+  if (v("motiv").length < 50) return $("err1").textContent = "Motivations trop courtes (50 caractères minimum).";
+  $("err1").textContent = "";
+  state.id = { discord: v("discord"), nom: v("nom"), age, tel: v("tel"), casier: v("casier"), motiv: v("motiv") };
+  montrer("s2"); afficherQuestion();
+});
+
+// Étape 2
+function afficherQuestion(){
+  const q = Q[state.idx];
+  $("qprog").textContent = `Question ${state.idx+1} sur ${Q.length}`;
+  $("qbar").style.width = (state.idx/Q.length*100) + "%";
+  $("qtexte").textContent = q.q;
+  $("qchoix").innerHTML = "";
+  q.a.forEach((txt, i) => {
+    const l = document.createElement("label"); l.className = "choix";
+    const r = document.createElement("input"); r.type = "radio"; r.name = "rep"; r.value = i;
+    l.append(r, document.createTextNode(txt));
+    $("qchoix").appendChild(l);
+  });
+  $("qnext").textContent = state.idx === Q.length-1 ? "Terminer le QCM →" : "Suivant →";
+  $("err2").textContent = "";
+}
+$("qnext").addEventListener("click", () => {
+  const sel = document.querySelector('input[name="rep"]:checked');
+  if (!sel) return $("err2").textContent = "Choisis une réponse.";
+  state.rep.push(Number(sel.value));
+  state.idx++;
+  if (state.idx < Q.length) afficherQuestion();
+  else { construireSituations(); montrer("s3"); }
+});
+
+// Étape 3
+function construireSituations(){
+  const box = $("situations"); box.innerHTML = "";
+  S.forEach((s, i) => {
+    const l = document.createElement("label"); l.textContent = s.titre;
+    const p = document.createElement("p"); p.className = "sous"; p.textContent = s.texte;
+    const t = document.createElement("textarea"); t.id = "sit"+i; t.maxLength = 1000;
+    const c = document.createElement("div"); c.className = "compteur"; c.textContent = "0 / 1000";
+    t.addEventListener("input", () => c.textContent = t.value.length + " / 1000");
+    box.append(l, p, t, c);
+  });
+}
+
+$("form3").addEventListener("submit", async e => {
+  e.preventDefault();
+  const rep = S.map((_, i) => $("sit"+i).value.trim());
+  if (rep.some(r => r.length < 40)) return $("err3").textContent = "Chaque réponse doit faire au moins 40 caractères.";
+  state.entretien = rep;
+  $("err3").textContent = ""; $("envoyer").disabled = true; $("envoyer").textContent = "Envoi en cours…";
+  try {
+    await envoyerWebhook();
+    localStorage.setItem(KEY, String(Date.now()));
+    montrer("s4");
+  } catch (err) {
+    $("err3").textContent = "Erreur d'envoi, préviens un administrateur. (" + err.message + ")";
+    $("envoyer").disabled = false; $("envoyer").textContent = "Envoyer mon dossier";
+  }
+});
+
+// Envoi vers le webhook Discord
+async function envoyerWebhook(){
+  const total = Q.length;
+  const score = state.rep.reduce((n, r, i) => n + (r === Q[i].c ? 1 : 0), 0);
+  const ratees = state.rep.map((r,i) => r !== Q[i].c ? i+1 : null).filter(Boolean);
+  const admis = score >= C.SEUIL;
+  const cut = (s, n=1024) => s.length > n ? s.slice(0, n-1) + "…" : s;
+
+  const fields = [
+    { name: "Nom / Prénom", value: cut(state.id.nom), inline: true },
+    { name: "Âge", value: String(state.id.age), inline: true },
+    { name: "Téléphone", value: cut(state.id.tel), inline: true },
+    { name: "Casier", value: cut(state.id.casier), inline: false },
+    { name: "Motivations", value: cut(state.id.motiv), inline: false },
+    { name: "📊 Résultat QCM", value: `**${score}/${total}** (seuil : ${C.SEUIL})\nQuestions ratées : ${ratees.join(", ") || "aucune"}`, inline: false },
+    ...S.map((s, i) => ({ name: s.titre, value: cut(state.entretien[i]), inline: false })),
+    { name: "⚖️ Verdict automatique",
+      value: admis ? "✅ Admissible — à convoquer pour l'entretien oral" : `❌ Insuffisant — peut repasser après ${C.COOLDOWN_HEURES} h`,
+      inline: false },
+  ];
+
+  const body = {
+    username: "Recrutement " + C.NOM_UNITE,
+    content: C.PING_ROLE_ID ? `<@&${C.PING_ROLE_ID}>` : undefined,
+    allowed_mentions: { parse: [], roles: C.PING_ROLE_ID ? [C.PING_ROLE_ID] : [] },
+    embeds: [{
+      title: "🚔 Candidature — " + C.NOM_UNITE,
+      description: "Candidat Discord : **" + state.id.discord.replace(/[*_`~|>]/g, "") + "**",
+      color: admis ? 0x1f8a4c : 0xd1202f,
+      fields,
+      timestamp: new Date().toISOString(),
+    }],
+  };
+
+  const res = await fetch(C.WEBHOOK_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error("HTTP " + res.status);
+}
+</script>
+</body>
+</html>
