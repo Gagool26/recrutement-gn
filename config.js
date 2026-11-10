@@ -1,6 +1,6 @@
 // ====== CONFIGURATION ======
 window.CONFIG = {
-  WEBHOOK_URL: "https://discord.com/api/webhooks/XXXX/YYYY", // <- ton webhook
+  WEBHOOK_URL: "https://discord.com/api/webhooks/1569815633024127026/d-0mx-aQjjLTqB5rVxmmEI_O7lERgW2tZpKu72ugt-2v5js57qQ81nf4c1lcSvwryQ5S", // <- ton webhook
   SEUIL: 6,              // note minimale pour être admissible (sur le nombre de questions)
   COOLDOWN_HEURES: 24,   // délai avant de pouvoir repasser (par navigateur)
   PING_ROLE_ID: "",      // optionnel : ID du rôle recruteur à ping
